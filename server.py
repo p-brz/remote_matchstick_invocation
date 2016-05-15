@@ -15,6 +15,8 @@ class GameManager(object):
             room = Room(name=roomName)
             self.rooms[roomName] = room
 
+        print("add player, ", player_name, " to room: ", room)
+
         if room.has_player(roomName):
             return Response(error=Error(Error.Causes.PlayerAlreadyOnRoom))
 

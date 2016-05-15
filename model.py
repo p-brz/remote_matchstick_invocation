@@ -37,3 +37,14 @@ class Response(object):
 
     def is_ok(self):
         return self.error is None;
+
+    def error_cause(self):
+        if self.error:
+            return self.error.cause
+
+        return None
+
+    def error_msg(self):
+        if self.error:
+            return Error.Causes.get_msg(self.error_cause())
+        return None
