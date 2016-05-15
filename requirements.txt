@@ -1,3 +1,4 @@
 colorama==0.3.7
 Pyro4==4.43
 serpent==1.12
+SQLAlchemy==1.0.12
