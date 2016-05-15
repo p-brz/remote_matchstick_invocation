@@ -1,28 +1,10 @@
- #!/usr/bin/python
- # -*- coding: utf-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import Pyro4
 
-from model import *
-
-class GameManager(object):
-    def __init__(self):
-        self.rooms = {}
-
-    def registerPlayer(self, player_name, roomName):
-        room = self.rooms.get(roomName, None)
-        if room is None:
-            room = Room(name=roomName)
-            self.rooms[roomName] = room
-
-        print("add player, ", player_name, " to room: ", room)
-
-        if room.has_player(roomName):
-            return Response(error=Error(Error.Causes.PlayerAlreadyOnRoom))
-
-        room.add_player(Player(name = player_name))
-
-        return Response()
+from remote import GameManager
+from remote.model import *
 
 def main():
     Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
@@ -38,5 +20,5 @@ def main():
 
     pyroDaemon.requestLoop()
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
