@@ -3,7 +3,9 @@ import Pyro4
 from cli.smlite.base import State
 from remote.model import *
 
+
 class InitState(State):
+
     def __init__(self, player):
         self.player = player
 
@@ -11,7 +13,9 @@ class InitState(State):
         Pyro4.config.SERIALIZER = 'pickle'
         self.player.proxy = Pyro4.Proxy("PYRONAME:gameserver.pyro")
 
-        self.player.name, self.player.room_name = self.register_player(self.player.proxy)
+        self.player.name, self.player.room_name = self.register_player(
+            self.player.proxy
+        )
 
         return False
 
@@ -29,7 +33,7 @@ class InitState(State):
 
             if response.is_ok():
                 registered = True
-            else :
+            else:
                 if response.get_cause == Error.Causes.PlayerAlreadyOnRoom:
                     print("Nome de usuário inválido! Escolha outro.")
                 else:
