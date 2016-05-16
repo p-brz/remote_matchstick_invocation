@@ -17,11 +17,13 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 class DataSession(object):
+    DEFAULT_DBFILE = '.data.sqlite'
+
     from sqlalchemy.orm import sessionmaker
     Session = sqlalchemy.orm.scoping.scoped_session(sessionmaker())
 
     def __init__(self, **kwargs):
-        self.dbfile = kwargs.get('dbfile', '.data.sqlite')
+        self.dbfile = kwargs.get('dbfile', self.DEFAULT_DBFILE)
 
         from sqlalchemy import create_engine
         engine = 'sqlite:///' + self.dbfile

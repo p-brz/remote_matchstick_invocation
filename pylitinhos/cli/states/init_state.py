@@ -1,5 +1,6 @@
 import sys
 import Pyro4
+import Pyro4.util
 from colorama import Fore
 from pylitinhos.remote.model import *
 from ..color import *
@@ -28,9 +29,14 @@ class InitState(State):
         print()
         text_info("## Identificação ##")
 
-        self.player.name, self.player.room_name = self.register_player(
-            self.player.proxy
-        )
+        try:
+            self.player.name, self.player.room_name = self.register_player(
+                self.player.proxy
+            )
+
+        except Exception:
+            print("Pyro traceback:")
+            print("".join(Pyro4.util.getPyroTraceback()))
 
         return False
 
@@ -49,17 +55,18 @@ class InitState(State):
             username = input(text_default("Username: "))
             password = getpass(text_default("Password: "))
 
+            print("auth user: ", username, ", ", password, " proxy: ", proxy)
             response = proxy.authenticate_user(username, password)
             if response.is_ok():
                 registered = True
             else:
-                if response.get_cause == Error.Causes.PlayerAlreadyOnRoom:
+                if response.cause == Error.Causes.PlayerAlreadyOnRoom:
                     print(text_danger(
                         "Nome de usuário inválido! Escolha outro."))
-                else if response.get_cause == Error.Causes.InvalidLogin:
+                elif response.cause == Error.Causes.InvalidLogin:
                     print(text_danger(
                         "Informações de login incorretas. Tente novamente."))
-                else if response.get_cause == Error.Causes.NewUser:
+                elif response.cause == Error.Causes.NewUser:
                     d = input(text_info("Usuário %s ainda não foi utilizado."
                                         "Deseja criar um novo usuário? (s/n)"))
 

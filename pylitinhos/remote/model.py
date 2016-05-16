@@ -43,11 +43,19 @@ class Response(object):
     def is_ok(self):
         return self.error is None
 
-    def error_cause(self):
+    @property
+    def cause(self):
         if self.error:
             return self.error.cause
 
         return None
+
+    @cause.setter
+    def cause(self, cause):
+        if not self.error:
+            self.error = Error(cause)
+        else:
+            self.error.cause = cause
 
     def error_msg(self):
         if self.error:
