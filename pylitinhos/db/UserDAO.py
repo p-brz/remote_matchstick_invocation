@@ -2,29 +2,15 @@ from . import BaseDAO
 from pylitinhos.model.User import User
 
 class UserDAO(BaseDAO):
-    #
-    # def __init__(self, session_builder):
-    #     super(UserDAO, self).__init__(session_builder)
 
-    def exist(self, username, session=None):
-        return self.get(username, session) is not None
+    def __init__(self):
+        super(UserDAO, self).__init__(User)
 
-    def get(self, username, dbSession=None):
-        s = self.build_session(dbSession)
+    def filter_get(self, query, username, *k, **kw):
+        return query.filter(User.username == username)
 
-        return s.query(User).filter(
-            User.username == username).one_or_none()
-
-    def create(self, username, password, session=None, autocommit=True):
-        s = self.build_session(session)
-        u = User(username=username, password=password)
-
-        s.add(u)
-
-        if(autocommit):
-            s.commit()
-
-        return u
+    def make_model(self, username, password, *k, **kw):
+        return User(username=username, password=password)
 
     def verify(self, username, password):
         u = self.get(username)

@@ -1,3 +1,4 @@
-from sqlalchemy.ext.declarative import declarative_base
-
-BaseModel = declarative_base()
+from .BaseModel import *
+from .Player import *
+from .Room import *
+from .User import *
