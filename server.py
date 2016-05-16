@@ -10,7 +10,8 @@ from pylitinhos.remote.model import *
 def main():
     Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
     pyroDaemon = Pyro4.Daemon()
-    uri = pyroDaemon.register(GameManager)
+    gameManager = GameManager()
+    uri = pyroDaemon.register(gameManager)
 
     print("Started object at uri: ", uri)
 

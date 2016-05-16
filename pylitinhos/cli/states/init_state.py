@@ -30,15 +30,21 @@ class InitState(State):
         text_info("## Identificação ##")
 
         try:
-            self.player.name, self.player.room_name = self.register_player(
+            self.player.name = self.register_player(
                 self.player.proxy
             )
+
+            self.player.room_name = self.enter_room(self.player.proxy)
+            if not self.player.room_name:
+                return False
+
+            return 'waitstart'
 
         except Exception:
             print("Pyro traceback:")
             print("".join(Pyro4.util.getPyroTraceback()))
 
-        return False
+            return False
 
     def create_rmi_proxy(self):
         Pyro4.config.SERIALIZER = 'pickle'
@@ -46,8 +52,7 @@ class InitState(State):
 
     def register_player(self, proxy):
         registered = False
-        name = None
-        room_name = None
+        username = None
 
         print(text_primary("> Identificação < "))
         while not registered:
@@ -76,7 +81,7 @@ class InitState(State):
                 else:
                     print(text_danger("Error: "), response.error_msg())
 
-        return (name, room_name)
+        return username
 
     def register_new_player(self, username, password, proxy):
         okay = False
@@ -100,16 +105,24 @@ class InitState(State):
 
         return True
 
-    def enter_room():
-        print(text_primary("> Sala de jogo < "))
-        room_name = input(text_default("Nome da sala: "))
+    def enter_room(self, proxy):
+        on_room = False
+        room_name = None
 
-        response = proxy.registerPlayer(name, room_name)
+        while not on_room:
+            print(text_primary("> Sala de jogo < "))
+            room_name = input(text_default("Nome da sala: "))
 
-        if response.is_ok():
-            registered = True
-        else:
-            if response.get_cause == Error.Causes.PlayerAlreadyOnRoom:
-                print("Nome de usuário inválido! Escolha outro.")
-            else:
-                print("Error: ", response.error_msg())
+            response = proxy.add_player_to_room(self.player.name, room_name)
+
+            on_room = response.is_ok()
+
+            if not on_room:
+                if response.cause == Error.Causes.InexistentUser:
+                    print("O usuário '%s' não existe" % self.player.name)
+                    return None
+                else:
+                    print("Não foi possível se conectar nesta sala. Tente de novo.")
+                    print()
+
+        return room_name

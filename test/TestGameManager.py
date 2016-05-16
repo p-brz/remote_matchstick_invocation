@@ -31,6 +31,11 @@ class TestGameManager(DbTestCase):
         self.assertIsNotNone(player)
         self.assertEqual(player.name, user.username)
 
+    def test_try_register_player_without_user(self):
+        res = self.game_manager.add_player_to_room("inexistent user", self.ROOMNAME)
+
+        self.assertFalse(res.is_ok())
+
     def test_get_room(self):
         room = self.given_a_room_with_some_users()
         room_name = room.name
@@ -56,6 +61,10 @@ class TestGameManager(DbTestCase):
         #Ao adicionar um novo jogador
         self.create_player_at_room(room.name, 'algum jogador')
         self.create_player_at_room(room.name, 'sicrano')
+
+        #observador é chamado de forma asincrona, então destroi game_manager
+        # para forçar que observers sejam chamados
+        self.game_manager.destroy()
 
         #Então o observador deve ser chamado
         self.assertTrue(mockObserver.on_add_player.called)

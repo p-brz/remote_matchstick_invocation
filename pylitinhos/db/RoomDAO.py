@@ -31,7 +31,7 @@ class RoomDAO(BaseDAO):
             self.save(room, session, autocommit)
 
         else:
-            player = room.get_player(player_name)
+            player = room.get_player(name=player_name)
 
         return player
 

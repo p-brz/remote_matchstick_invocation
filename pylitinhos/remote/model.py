@@ -7,9 +7,11 @@ class Error(object):
 
     class Causes:
         PlayerAlreadyOnRoom = 1
-        InvalidLogin = 2
-        NewUser = 3
-        CreationError = 4
+        InvalidLogin        = 2
+        NewUser             = 3
+        CreationError       = 4
+        NoObserver          = 5
+        InexistentUser      = 6
 
         msgs = {
             PlayerAlreadyOnRoom: "Jogador já foi adicionado a esta sala"
