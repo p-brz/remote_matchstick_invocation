@@ -1,4 +1,5 @@
 class SmLite(object):
+
     def __init__(self):
         self.states = {}
 
@@ -26,3 +27,12 @@ class SmLite(object):
             else:
                 current_state = r_state
                 current_args = r_args
+
+
+class State(object):
+
+    def __init__(self, player):
+        self.player = player
+
+    def run(self, arguments={}):
+        pass

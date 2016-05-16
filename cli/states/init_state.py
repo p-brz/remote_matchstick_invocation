@@ -1,13 +1,10 @@
 import sys
 import Pyro4
-from cli.smlite.base import State
+from cli.smlite import State
 from remote.model import *
 
 
 class InitState(State):
-
-    def __init__(self, player):
-        self.player = player
 
     def run(self, arguments={}):
         Pyro4.config.SERIALIZER = 'pickle'
