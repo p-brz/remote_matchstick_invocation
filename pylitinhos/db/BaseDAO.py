@@ -30,6 +30,14 @@ class BaseDAO(object):
 
         return entity
 
+    def save(self, entity, session=None, autocommit=True):
+        s = self.build_session(session)
+
+        s.merge(entity)
+
+        if autocommit:
+            s.commit()
+
     def filter_get(self, query, *k, **kw):
         raise NotImplementedError()
 
