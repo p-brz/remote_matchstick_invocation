@@ -10,7 +10,7 @@ class GameManager(object):
         if self.db is None:
             self.db = Data()
 
-        self.rooms = {}
+        self.room_observers = {}
 
     def authenticate_user(self, username, password):
         user_authenticated = self.db.users.verify(username, password)
@@ -40,4 +40,17 @@ class GameManager(object):
     def add_player_to_room(self, player_name, room_name):
         player = self.db.rooms.add_player(room_name, player_name)
 
+        if room_name in self.room_observers:
+            for observer in self.room_observers[room_name]:
+                observer.on_add_player(player, room_name)
+
         return Response(bundle=Bundle(player=player))
+
+    def observe_room(self, room_name, observer):
+        if not observer:
+            return
+
+        if room_name not in self.room_observers:
+            self.room_observers[room_name] = []
+
+        self.room_observers[room_name].append(observer)

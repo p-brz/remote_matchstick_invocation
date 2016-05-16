@@ -1,4 +1,5 @@
 from .DbTestCase import DbTestCase
+from unittest.mock import Mock
 
 from pylitinhos.remote import GameManager
 
@@ -45,17 +46,41 @@ class TestGameManager(DbTestCase):
         self.assertEqual(res_room.name, room_name)
         self.assertEqual(len(res_room.players), player_count)
 
+    def test_observe_room(self):
+        room = self.db.rooms.create(self.ROOMNAME)
+
+        #Adicionar observer
+        mockObserver = Mock(spec=['on_add_player'])
+        self.game_manager.observe_room(room.name, mockObserver)
+
+        #Ao adicionar um novo jogador
+        self.create_player_at_room(room.name, 'algum jogador')
+        self.create_player_at_room(room.name, 'sicrano')
+
+        #Então o observador deve ser chamado
+        self.assertTrue(mockObserver.on_add_player.called)
+        self.assertEqual(mockObserver.on_add_player.call_count, 2)
 
     def given_a_room_with_some_users(self):
-        u1 = self.given_an_existent_user()
-        u2 = self.given_an_existent_user(username='outro usuario', nickname='nick')
+        # u1 = self.given_an_existent_user()
+        # u2 = self.given_an_existent_user(username='outro usuario', nickname='nick')
 
-        self.db.rooms.add_player(self.ROOMNAME, u1.username)
-        self.db.rooms.add_player(self.ROOMNAME, u2.username)
+        # self.db.rooms.add_player(self.ROOMNAME, u1.username)
+        # self.db.rooms.add_player(self.ROOMNAME, u2.username)
+
+        self.create_player_at_room(self.ROOMNAME, 'algum usuario')
+        self.create_player_at_room(self.ROOMNAME, 'outro', nickname='nick')
 
         return self.db.rooms.get(self.ROOMNAME)
 
     def given_an_existent_user(self, **kw):
+        return self.create_user(**kw)
+
+    def create_player_at_room(self, room_name, username, **kw):
+        self.create_user(username=username, **kw)
+        return self.game_manager.add_player_to_room(username, room_name)
+
+    def create_user(self, **kw):
         return self.db.users.create(kw.get('username', self.USERNAME),
                                     kw.get('password', self.PASSWORD),
                                     nickname=kw.get('nickname', self.NICKNAME))
