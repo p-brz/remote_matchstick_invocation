@@ -1,7 +1,7 @@
 import sys
 import Pyro4
-from cli.smlite import State
-from remote.model import *
+from ..smlite.base import State
+from pylitinhos.remote.model import *
 
 
 class InitState(State):

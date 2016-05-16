@@ -1,20 +1,6 @@
  # -*- coding: utf-8 -*-
-
-class Player(object):
-    def __init__(self, **kw):
-        self.name = kw.get('name', '')
-        self.palitos = 0
-
-class Room(object):
-    def __init__(self, **kw):
-        self.name = kw.get('name', '')
-        self.players = {}
-
-    def add_player(self, player):
-        self.players[player.name] = player
-
-    def has_player(self, player_name):
-        return player_name in self.players
+from pylitinhos.model.Room import *
+from pylitinhos.model.Player import *
 
 class Error(object):
     class Causes:

@@ -1,4 +1,4 @@
-from cli import Client
+from pylitinhos.cli import Client
 
 
 def main():

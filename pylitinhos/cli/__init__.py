@@ -1,5 +1,5 @@
 
-from cli.smlite import SmLite
+from .smlite import SmLite
 from .states import *
 
 

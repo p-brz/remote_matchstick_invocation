@@ -3,8 +3,8 @@
 
 import Pyro4
 
-from remote import GameManager
-from remote.model import *
+from pylitinhos.remote import GameManager
+from pylitinhos.remote.model import *
 
 
 def main():
