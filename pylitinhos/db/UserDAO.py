@@ -12,7 +12,7 @@ class UserDAO(BaseDAO):
         return query.filter(User.username == username)
 
     def make_model(self, username, password, *k, **kw):
-        return User(username=username, password=password)
+        return User(username=username, password=password, **kw)
 
     def verify(self, username, password):
         u = self.get(username)

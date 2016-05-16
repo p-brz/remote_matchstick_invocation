@@ -19,6 +19,14 @@ class GameManager(object):
             else:
                 return Response(error=Error(Error.Causes.NewUser))
 
+    def register_new_player(self, username, password, nickname):
+        '''Cria um novo usuário'''
+        try:
+            self.db.users.create(username, password, nickname=nickname)
+            return Response()
+        except:
+            return Response(error=Error(Error.Causes.CreationError))
+
     def registerPlayer(self, player_name, roomName):
         room = self.rooms.get(roomName, None)
         if room is None:
