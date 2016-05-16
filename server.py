@@ -6,6 +6,7 @@ import Pyro4
 from pylitinhos.remote import GameManager
 from pylitinhos.remote.model import *
 
+
 def main():
     Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
     pyroDaemon = Pyro4.Daemon()

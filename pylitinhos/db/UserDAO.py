@@ -1,5 +1,7 @@
-from . import BaseDAO
+import hashlib
 from pylitinhos.model.User import User
+from . import BaseDAO
+
 
 class UserDAO(BaseDAO):
 

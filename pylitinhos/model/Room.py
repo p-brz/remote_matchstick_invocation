@@ -5,6 +5,7 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
+
 class Room(BaseModel):
     __tablename__ = "rooms"
 

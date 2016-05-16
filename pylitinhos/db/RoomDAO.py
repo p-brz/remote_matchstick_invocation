@@ -4,6 +4,7 @@ from pylitinhos.model.Room import Room
 from pylitinhos.model.Player import Player
 from pylitinhos.model.User import User
 
+
 class RoomDAO(BaseDAO):
     def __init__(self):
         super(RoomDAO, self).__init__(Room)
