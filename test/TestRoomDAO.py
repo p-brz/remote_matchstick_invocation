@@ -29,8 +29,7 @@ class TestRoomDAO(DbTestCase):
         self.assertIsNotNone(player)
 
         #Destroy sessao para garantir que objeto seja recriado do banco
-        self.db.destroy()
-        self.db = self.create_db()
+        self.reset_db()
 
         #Ele deve ser persistido no banco de dados
         same_room = self.db.rooms.get(self.ROOM_NAME)

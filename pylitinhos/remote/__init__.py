@@ -30,6 +30,9 @@ class GameManager(object):
         except:
             return Response(error=Error(Error.Causes.CreationError))
 
+    def get_room(self, room_name):
+        return Response(bundle=Bundle(room=self.db.rooms.get(room_name)))
+
     def room_exist(self, room_name):
         exist = self.db.rooms.exist(room_name)
         return Response(bundle=Bundle(exist=exist))

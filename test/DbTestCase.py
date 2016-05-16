@@ -15,3 +15,9 @@ class DbTestCase(unittest.TestCase):
 
     def create_db(self):
         return Data(dbfile = self.DB_FILE)
+
+    def reset_db(self):
+        self.db.destroy()
+        self.db = self.create_db()
+
+        return self.db
