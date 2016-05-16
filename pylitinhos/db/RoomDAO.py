@@ -1,4 +1,5 @@
 from .BaseDAO import BaseDAO
+from .PlayerDAO import PlayerDAO
 from pylitinhos.model.Room import Room
 from pylitinhos.model.Player import Player
 from pylitinhos.model.User import User
@@ -22,8 +23,7 @@ class RoomDAO(BaseDAO):
 
         player = None
         if not room.has_player(player_name):
-            user = s.query(User).filter(User.username == player_name).one()
-            player = Player(user_id = user.id, user = user)
+            player = PlayerDAO.create_player(session=s, name=player_name)
             room.add_player(player)
             s.add(player)
 

@@ -8,9 +8,10 @@ from .User import User
 
 class Player(BaseModel):
     __tablename__ = "players"
-    id = Column(sqlalchemy.Integer, primary_key=True)
+
+    id      = Column(sqlalchemy.Integer, primary_key=True)
     user_id = Column(sqlalchemy.Integer, ForeignKey(User.__tablename__ + ".id"))
-    user = relationship("User", backref=backref(__tablename__, uselist=False))
+    user    = relationship("User", backref=backref(__tablename__, uselist=False))
 
     room_id = Column(sqlalchemy.Integer, ForeignKey('rooms.id'))
 

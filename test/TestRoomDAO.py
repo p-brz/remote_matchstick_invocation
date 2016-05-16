@@ -26,11 +26,6 @@ class TestRoomDAO(DbTestCase):
 
         #Ao adicionar um jogador a esta sala
         player = self.db.rooms.add_player(room.name, user.username)
-        # player = Player(user_id = user.id, user = user)
-        # room.add_player(player)
-
-        # session.add(player)
-        # self.db.rooms.save(room, session)
         self.assertIsNotNone(player)
 
         #Destroy sessao para garantir que objeto seja recriado do banco
