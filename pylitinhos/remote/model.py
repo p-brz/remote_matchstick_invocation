@@ -25,11 +25,14 @@ class Error(object):
 
 class Bundle(object):
 
-    def __init__(self, data={}):
+    def __init__(self, data={}, **kw):
         self.data = data
+        self.data.update(kw)
 
     def add_data(self, data, value):
         self.data.update({data: value})
+
+        return self;
 
     def get_data(self, data):
         return self.data[data]

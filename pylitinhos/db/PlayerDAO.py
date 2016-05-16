@@ -22,6 +22,6 @@ class PlayerDAO(BaseDAO):
         return Player(user_id=kw.get('user_id', None), user=kw.get('user', None))
 
     @staticmethod
-    def create_player(session, name):
+    def create_player(session, name, palitos=0):
         user = session.query(User).filter(User.username == name).one()
-        return Player(user_id = user.id, user = user)
+        return Player(user_id = user.id, user = user, palitos=palitos)

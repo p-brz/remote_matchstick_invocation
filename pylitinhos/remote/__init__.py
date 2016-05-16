@@ -5,8 +5,11 @@ from ..db.UserDAO import UserDAO
 
 class GameManager(object):
 
-    def __init__(self):
-        self.db = Data()
+    def __init__(self, **kw):
+        self.db = kw.get('db', None)
+        if self.db is None:
+            self.db = Data()
+
         self.rooms = {}
 
     def authenticate_user(self, username, password):
@@ -27,15 +30,11 @@ class GameManager(object):
         except:
             return Response(error=Error(Error.Causes.CreationError))
 
-    def registerPlayer(self, player_name, roomName):
-        room = self.rooms.get(roomName, None)
-        if room is None:
-            room = Room(name=roomName)
-            self.rooms[roomName] = room
+    def room_exist(self, room_name):
+        exist = self.db.rooms.exist(room_name)
+        return Response(bundle=Bundle(exist=exist))
 
-        if room.has_player(roomName):
-            return Response(error=Error(Error.Causes.PlayerAlreadyOnRoom))
+    def add_player_to_room(self, player_name, room_name):
+        player = self.db.rooms.add_player(room_name, player_name)
 
-        room.add_player(Player(name=player_name))
-
-        return Response()
+        return Response(bundle=Bundle(player=player))

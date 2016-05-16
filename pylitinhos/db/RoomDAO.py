@@ -24,7 +24,7 @@ class RoomDAO(BaseDAO):
 
         player = None
         if not room.has_player(player_name):
-            player = PlayerDAO.create_player(session=s, name=player_name)
+            player = PlayerDAO.create_player(session=s, name=player_name, palitos=3)
             room.add_player(player)
             s.add(player)
 

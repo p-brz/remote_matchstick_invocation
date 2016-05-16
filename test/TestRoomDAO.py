@@ -17,7 +17,7 @@ class TestRoomDAO(DbTestCase):
 
         self.assertEqual(room, same_room)
 
-    def test_add_user_update(self):
+    def test_add_player(self):
 
         room = self.given_some_room()
         user = self.given_some_user()
@@ -43,6 +43,9 @@ class TestRoomDAO(DbTestCase):
         self.assertIsNotNone(same_player)
         self.assertIsNotNone(same_player.id)
         self.assertGreaterEqual(same_player.id, 0)
+
+        #Jogador deve iniciar com 3 palitos
+        self.assertEqual(same_player.palitos, 3)
 
     def given_some_room(self, session=None):
         return self.db.rooms.create(self.ROOM_NAME, session)
