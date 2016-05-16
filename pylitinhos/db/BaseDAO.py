@@ -1,8 +1,10 @@
 from .DataSession import SessionBuilder
 
+
 class BaseDAO(object):
     # def __init__(self, session_builder):
     #     self.session_builder = session_builder
+
     def __init__(self, ModelClass=None):
         self.session_builder = SessionBuilder()
         self.ModelClass = ModelClass

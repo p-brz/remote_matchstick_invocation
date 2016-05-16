@@ -3,6 +3,7 @@ from .BaseModel import BaseModel
 import sqlalchemy
 from sqlalchemy import Column
 
+
 class Room(BaseModel):
     __tablename__ = "rooms"
 

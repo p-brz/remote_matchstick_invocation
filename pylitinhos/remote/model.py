@@ -1,13 +1,17 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from pylitinhos.model.Room import *
 from pylitinhos.model.Player import *
 
+
 class Error(object):
+
     class Causes:
         PlayerAlreadyOnRoom = 1
+        InvalidLogin = 2
+        NewUser = 3
 
         msgs = {
-            PlayerAlreadyOnRoom : "Jogador já foi adicionado a esta sala"
+            PlayerAlreadyOnRoom: "Jogador já foi adicionado a esta sala"
         }
 
         @staticmethod
@@ -17,12 +21,27 @@ class Error(object):
     def __init__(self, cause):
         self.cause = cause
 
+
+class Bundle(object):
+
+    def __init__(self, data={}):
+        self.data = data
+
+    def add_data(self, data, value):
+        self.data.update({data: value})
+
+    def get_data(self, data):
+        return self.data[data]
+
+
 class Response(object):
+
     def __init__(self, **kw):
         self.error = kw.get('error', None)
+        self.bundle = kw.get('bundle', None)
 
     def is_ok(self):
-        return self.error is None;
+        return self.error is None
 
     def error_cause(self):
         if self.error:

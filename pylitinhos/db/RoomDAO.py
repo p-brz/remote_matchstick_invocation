@@ -1,6 +1,7 @@
 from .BaseDAO import BaseDAO
 from pylitinhos.model.Room import Room
 
+
 class RoomDAO(BaseDAO):
     def __init__(self):
         super(RoomDAO, self).__init__(Room)
