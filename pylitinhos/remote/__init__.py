@@ -20,6 +20,9 @@ class GameManager(object):
         self.room_infos = {}
         self.executor = ThreadPoolExecutor(max_workers=2)
 
+        #Usa isto para testes (evita uso de operações asincronas)
+        self.synchronous = False
+
     def echo(self):
         return True
 
@@ -78,12 +81,13 @@ class GameManager(object):
         if all_ready:
             self.setup_game(room_name)
 
+
     def setup_game(self, room_name):
         room = self.db.rooms.get(room_name).clone()
         self.room_infos.update({
             room_name: {
                 'current_round': 1,
-                'order': room.get_players_names()
+                'order': room.get_players_names(),
                 'bets': {},
                 'guesses': {}
             }
@@ -104,7 +108,7 @@ class GameManager(object):
         player = None
         try:
             # Cria sala e player (se ja não tiverem sido criados)
-            self.db.rooms.add_player(room_name, player_name)
+            player = self.db.rooms.add_player(room_name, player_name)
         except NoResultFound:
             return Response(error=Error(Error.Causes.InexistentUser))
 
@@ -142,6 +146,29 @@ class GameManager(object):
 
         return Response()
 
+    def make_guess(self, room_name, player_name, guess):
+        room = self.db.rooms.get(room_name).clone()
+
+        sum_palitos = 0
+        for pname in room.players:
+            sum_palitos += room.get_player(name=pname).palitos
+
+        if guess <= 0 or guess > sum_palitos:
+            return Response(error=Error(Error.Causes.InvalidGuess))
+
+        self.room_infos[room_name]['guesses'].update({
+            player_name: guess
+        })
+
+        evt = Event(EventTypes.OnPlayerGuess,
+                    player_name=player_name,
+                    room_name=room_name,
+                    guess=guess)
+
+        self._notify_room_event(room_name, evt)
+
+        return Response()
+
     def observe_room(self, room_name, observer):
         if not observer:
             return Response(error=Error(Error.Causes.NoObserver))
@@ -163,4 +190,7 @@ class GameManager(object):
         observers = self.room_observers.get(room_name, None)
 
         if observers:
-            self.executor.submit(notify_room_event_async, self, evt, observers)
+            if not self.synchronous:
+                self.executor.submit(notify_room_event_async, self, evt, observers)
+            else:
+                notify_room_event_async(self, evt, observers)

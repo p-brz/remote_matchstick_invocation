@@ -13,6 +13,7 @@ class TestGameManager(DbTestCase):
         super(TestGameManager, self).setUp()
 
         self.game_manager = GameManager(db=self.db)
+        self.game_manager.synchronous = True
 
     def test_register_player_to_room(self):
         self.assertFalse(self.db.users.exist(self.USERNAME))
@@ -27,6 +28,7 @@ class TestGameManager(DbTestCase):
         res = self.game_manager.add_player_to_room(user.username, self.ROOMNAME)
         self.assertTrue(res.is_ok())
 
+        print(res.bundle.data)
         player = res.bundle.get_data('player')
         self.assertIsNotNone(player)
         self.assertEqual(player.name, user.username)
@@ -51,15 +53,34 @@ class TestGameManager(DbTestCase):
         self.assertEqual(res_room.name, room_name)
         self.assertEqual(len(res_room.players), player_count)
 
+    def test_make_guess(self):
+        room = self.given_a_room_with_some_users()
+
+        observer = Mock()
+        self.game_manager.observe_room(room.name, observer)
+
+        self.game_manager.setup_game(room.name)
+
+        for pname in room.players:
+            self.game_manager.room_infos[room.name]['bets'] = {
+                    pname : 2
+            }
+
+        res = self.game_manager.make_guess(room.name, self.USERNAME, 4)
+
+        self.assertTrue(res.is_ok())
+        self.assertTrue(observer.on_event.called)
+
+
     def test_observe_room(self):
         room = self.db.rooms.create(self.ROOMNAME)
 
         #Adicionar observer
-        mockObserver = Mock(spec=['on_add_player'])
+        mockObserver = Mock(spec=['on_event'])
         self.game_manager.observe_room(room.name, mockObserver)
 
         #Ao adicionar um novo jogador
-        self.create_player_at_room(room.name, 'algum jogador')
+        self.create_player_at_room(room.name, self.USERNAME)
         self.create_player_at_room(room.name, 'sicrano')
 
         #observador é chamado de forma asincrona, então destroi game_manager
@@ -67,8 +88,8 @@ class TestGameManager(DbTestCase):
         self.game_manager.destroy()
 
         #Então o observador deve ser chamado
-        self.assertTrue(mockObserver.on_add_player.called)
-        self.assertEqual(mockObserver.on_add_player.call_count, 2)
+        self.assertTrue(mockObserver.on_event.called)
+        self.assertEqual(mockObserver.on_event.call_count, 2)
 
     def given_a_room_with_some_users(self):
         # u1 = self.given_an_existent_user()
