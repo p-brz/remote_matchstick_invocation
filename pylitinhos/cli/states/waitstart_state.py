@@ -33,12 +33,16 @@ class WaitStartState(State):
 
         self.wait_game_start()
 
-        return False
+        print()
+        print(text_success("Iniciando partida..."))
+        return 'game'
 
     def wait_game_start(self):
+        print(text_info("Para iniciar o jogo, digite 'start' "
+                        "a qualquer momento"))
         self.observerThread = ObserverThread(self.evLoop.queue, self.player.proxy, self.player.room_name)
         #Modificar inputAsync
-        self.inputAsync = InputAsync(self.evLoop.queue, "Digite um comando:\n")
+        self.inputAsync = InputAsync(self.evLoop.queue, "\n")
 
         try:
             self.observerThread.start()
@@ -51,19 +55,34 @@ class WaitStartState(State):
 
     def event_loop(self):
         for evt in self.evLoop.events():
-            self.on_event(evt)
+            keep_going = self.on_event(evt)
+            if not keep_going:
+                break
+
 
     def on_event(self, event):
-
+        # print("Event: ", event)
         if(event.type == EventTypes.AddedUser):
             self.on_added_player(event)
+
+        elif(event.type == EventTypes.NewGame):
+            return False
 
         elif(event.type == EventTypes.UserInput):
             #implementação penas para debug
             #TODO: permitir usuário enviar comando para começar jogo
-            print("Event: ", event)
-            self.inputAsync = InputAsync(self.evLoop.queue, "Pode digitar outro:\n")
+            if event.data['line'] == 'start':
+                ok = self.player.proxy.can_start_game(self.player.room_name)
+                if ok:
+                    self.player.proxy.start_game(self.player.room_name)
+                else:
+                    print(text_danger("O número de jogadores é insuficiente "
+                                      "para se começar uma partida"))
+
+            self.inputAsync = InputAsync(self.evLoop.queue, "")
             self.inputAsync.start()
+
+        return True
 
     def on_added_player(self, event):
         player_name = event.data.get('player_name', '')

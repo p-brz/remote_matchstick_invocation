@@ -62,6 +62,15 @@ class GameManager(object):
 
         return Response(bundle=Bundle(player=player))
 
+    def can_start_game(self, room_name):
+        room = self.db.rooms.get(room_name).clone()
+        return room.player_count() >= 2
+
+    def start_game(self, room_name):
+        print("Starting game")
+        evt = Event(EventTypes.NewGame, valid=True)
+        self._notify_room_event(room_name, evt)
+
     def observe_room(self, room_name, observer):
         if not observer:
             return Response(error=Error(Error.Causes.NoObserver))
