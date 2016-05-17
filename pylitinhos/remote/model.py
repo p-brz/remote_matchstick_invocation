@@ -14,7 +14,6 @@ class Error(object):
         InexistentUser = 6
         InvalidBet = 7
         FirstBetNull = 8
-        InvalidBet = 10
         InvalidGuess = 9
 
         msgs = {
