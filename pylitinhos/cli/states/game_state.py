@@ -12,7 +12,6 @@ class GameState(State):
 
     def run(self, arguments={}):
         print(text_primary("> Início do jogo <"))
-        proxy = self.player.proxy
 
         match_over = False
         while not match_over:
@@ -21,10 +20,9 @@ class GameState(State):
             self.guessing_phase()
             self.result_phase()
 
-            match_over = proxy.is_match_over_for_me(self.player.room_name,
-                                                    self.player.name)
+            match_over = self.is_match_over_for_me()
 
-        if proxy.is_winner(self.player.room_name, self.player.name):
+        if self.i_am_winner():
             print(text_success("A conta não é sua hoje"))
         else:
             print(text_danger("Parece que hoje você paga a conta"))
@@ -56,8 +54,7 @@ class GameState(State):
             bet = input(text_primary("Informe a quantidade de palitos: "))
             bet_ok = self.check_valid_bet(bet)
 
-        self.player.proxy.end_bet_turn(self.player.room_name,
-                                       self.player.name)
+        self.end_remote_turn()
         self.player.my_turn = False
 
     def guessing_phase(self):
@@ -77,8 +74,7 @@ class GameState(State):
             guess = input(text_primary("Informe um palpite: "))
             guess_ok = self.check_valid_guess(guess)
 
-        self.player.proxy.end_guess_turn(self.player.room_name,
-                                         self.player.name)
+        self.end_remote_turn()
         self.player.my_turn = False
 
     def result_phase(self):
@@ -145,6 +141,14 @@ class GameState(State):
         except ValueError:
             return False
 
+    def is_match_over_for_me(self):
+        # TODO: Corrigir com chamada ao servidor
+        return True
+
+    def i_am_winner(self):
+        # TODO: Corrigir com chamada ao servidor
+        return True
+
     def is_guess_phase(self):
         # TODO: Corrigir com chamada ao servidor
         return True
@@ -152,3 +156,12 @@ class GameState(State):
     def is_bet_phase(self):
         # TODO: Corrigir com chamada ao servidor
         return True
+
+    def end_guess_turn(self):
+        self.player.proxy.end_guess_turn(self.player.room_name,
+                                         self.player.name)
+
+    def end_bet_turn(self):
+        self.player.proxy.end_bet_turn(self.player.room_name,
+                                       self.player.name)
+        return
