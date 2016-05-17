@@ -118,6 +118,9 @@ class GameManager(object):
     def start_game(self, room_name):
         print("Starting game")
         evt = Event(EventTypes.NewGame, valid=True)
+
+        print("Start game evt:", evt)
+
         self._notify_room_event(room_name, evt)
 
     def observe_room(self, room_name, observer):

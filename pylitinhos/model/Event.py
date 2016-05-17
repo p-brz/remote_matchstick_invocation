@@ -5,18 +5,24 @@ class EventTypes(object):
     UserInput   = 2
     NewGame     = 3
 
-    StartRound          = 3
-    ChangeChoiceTurn    = 4
-    ChangeGuessingTurn  = 5
-    OnPlayerGuess       = 6
-    FinishRound         = 7
-    OnPlayerWin         = 8
-    MatchFinished       = 9
+    StartRound          = 4
+    ChangeChoiceTurn    = 5
+    ChangeGuessingTurn  = 6
+    OnPlayerGuess       = 7
+    FinishRound         = 8
+    OnPlayerWin         = 9
+    MatchFinished       = 10
 
     _str = {
         Shutdown : "Shutdown",
         AddedUser : "AddedUser",
-        NewGame : "NewGame"
+        NewGame : "NewGame",
+        StartRound : "StartRound",
+        ChangeChoiceTurn : "ChangeChoiceTurn",
+        OnPlayerGuess : "OnPlayerGuess",
+        FinishRound : "FinishRound",
+        OnPlayerWin : "OnPlayerWin",
+        MatchFinished : "MatchFinished" 
     }
 
     @staticmethod
