@@ -12,6 +12,7 @@ from queue import Queue
 
 from pylitinhos.remote.model import *
 from ..EventLoop import *
+from ..InputReader import InputAsync
 
 class WaitStartState(State):
 
@@ -21,15 +22,28 @@ class WaitStartState(State):
 
     def run(self, arguments={}):
         self.observerThread = ObserverThread(self.evLoop.queue, self.player.proxy, self.player.room_name)
-        self.observerThread.start()
+        self.inputAsync = InputAsync(self.evLoop.queue, "Digite um comando:\n")
 
-        for evt in self.evLoop.events():
-            self.on_event(evt)
+        try:
+            self.observerThread.start()
+            self.inputAsync.start()
+
+            for evt in self.evLoop.events():
+                self.on_event(evt)
+
+        finally:
+            self.observerThread.stop()
+            self.inputAsync.stop()
 
         return False
 
     def on_event(self, event):
         print("Event: ", event)
+
+        if(event.type == EventTypes.UserInput):
+            self.inputAsync = InputAsync(self.evLoop.queue, "Pode digitar outro:\n")
+            self.inputAsync.start()
+
 
 class ObserverThread(Thread):
     class GameStartObserver(object):

@@ -75,6 +75,7 @@ class GameManager(object):
     def _notify_room_event(self, room_name, evt):
         def notify_room_event_async(self, evt, observers):
             if observers:
+                print("notify evt async : ", evt, " for %d observers" % len(observers))
                 for observer in observers:
                     observer.on_event(evt)
 
