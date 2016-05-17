@@ -56,10 +56,10 @@ class InitState(State):
                 if response.get_cause == Error.Causes.PlayerAlreadyOnRoom:
                     print(text_danger(
                         "Nome de usuário inválido! Escolha outro."))
-                else if response.get_cause == Error.Causes.InvalidLogin:
+                elif response.get_cause == Error.Causes.InvalidLogin:
                     print(text_danger(
                         "Informações de login incorretas. Tente novamente."))
-                else if response.get_cause == Error.Causes.NewUser:
+                elif response.get_cause == Error.Causes.NewUser:
                     d = input(text_info("Usuário %s ainda não foi utilizado."
                                         "Deseja criar um novo usuário? (s/n)"))
 
