@@ -35,7 +35,7 @@ class WaitStartState(State):
 
         print()
         print(text_success("Iniciando partida..."))
-        return ('game',{'event_loop' : self.evLoop})
+        return ('game',{'event_loop' : self.evLoop,  'observer_thread' : self.observerThread})
 
     def wait_game_start(self):
         print(text_info("Para iniciar o jogo, digite 'start' "
@@ -49,8 +49,10 @@ class WaitStartState(State):
             self.inputAsync.start()
 
             self.event_loop()
-        finally:
+        except:
             self.observerThread.stop()
+            raise;
+        finally:
             self.inputAsync.stop()
 
     def event_loop(self):
