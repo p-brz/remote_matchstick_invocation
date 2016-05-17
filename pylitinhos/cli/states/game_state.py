@@ -69,8 +69,16 @@ class GameState(State):
 
     def on_start_round(self, evt):
         '''Começa rodada'''
-        print(evt)
-        pass
+        print(text_primary("Rodada %d" % evt.data.get('round')))
+
+        print(text_primary("Etapa 1 - Aposta"))
+        print()
+        current_player = evt.data.get('player_name')
+        if current_player == self.player.name:
+            self.betting_phase()
+        else:
+            print(text_info("Vez do jogador "), end='')
+            print(current_player)
 
     def on_change_choice_turn(self, evt):
         ''' Muda a rodada de quem deve escolher os palitos'''
@@ -114,22 +122,16 @@ class GameState(State):
             print(text_default(palitinhos))
 
     def betting_phase(self):
-        print()
-        print(text_primary("1 - Aposta"))
-        if not self.player.my_turn:
-            print(text_info("Aguardando sua vez de jogar..."))
-        while not self.player.my_turn:
-            continue
-
-        print()
-        print(text_success("Sua vez"))
+        print(text_success("É a sua vez"))
         bet_ok = False
         while not bet_ok:
             bet = input(text_primary("Informe a quantidade de palitos: "))
             bet_ok = self.check_valid_bet(bet)
 
-        self.end_remote_turn()
-        self.player.my_turn = False
+        self.player.proxy.end_betting_turn(
+            self.player.room_name,
+            self.player.name
+        )
 
     def guessing_phase(self):
         print()

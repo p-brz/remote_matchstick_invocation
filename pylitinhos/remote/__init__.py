@@ -83,13 +83,14 @@ class GameManager(object):
         room = self.db.rooms.get(room_name).clone()
         self.room_infos.update({
             room_name: {
-                'current_turn': 1,
+                'current_round': 1,
                 'order': room.get_players_names()
             }
         })
 
         evt = Event(EventTypes.StartRound,
-                    player_name=self.room_infos[room_name]['order'][0])
+                    player_name=self.room_infos[room_name]['order'][0],
+                    round=self.room_infos[room_name]['current_round'])
         self._notify_room_event(room_name, evt)
 
 
