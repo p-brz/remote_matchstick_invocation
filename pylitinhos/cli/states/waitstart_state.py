@@ -35,7 +35,7 @@ class WaitStartState(State):
 
         print()
         print(text_success("Iniciando partida..."))
-        return 'game'
+        return ('game',{'event_loop' : self.evLoop})
 
     def wait_game_start(self):
         print(text_info("Para iniciar o jogo, digite 'start' "

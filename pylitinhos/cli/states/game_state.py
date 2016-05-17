@@ -7,6 +7,7 @@ from ..color import *
 from ..smlite import State
 from getpass import getpass
 
+from pylitinhos.model.Event import *
 
 class GameState(State):
     def GameState(self, player, **kw):
@@ -43,13 +44,13 @@ class GameState(State):
 
     def on_event(self, evt):
         callback = {
-            StartRound          : self.on_start_round,
-            ChangeChoiceTurn    : self.on_change_choice_turn,
-            ChangeGuessingTurn  : self.on_change_guessing_turn,
-            OnPlayerGuess       : self.on_player_guess,
-            FinishRound         : self.on_finish_round,
-            OnPlayerWin         : self.on_player_win,
-            MatchFinished       : self.on_match_finish
+            EventTypes.StartRound          : self.on_start_round,
+            EventTypes.ChangeChoiceTurn    : self.on_change_choice_turn,
+            EventTypes.ChangeGuessingTurn  : self.on_change_guessing_turn,
+            EventTypes.OnPlayerGuess       : self.on_player_guess,
+            EventTypes.FinishRound         : self.on_finish_round,
+            EventTypes.OnPlayerWin         : self.on_player_win,
+            EventTypes.MatchFinished       : self.on_match_finish
         }.get(evt.type, None)
 
         if callback:
