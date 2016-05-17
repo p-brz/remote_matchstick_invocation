@@ -44,6 +44,15 @@ class GameManager(object):
     def get_room(self, room_name):
         return Response(bundle=Bundle(room=self.db.rooms.get(room_name).clone()))
 
+    def get_match_info(self, room_name):
+        room = self.db.rooms.get(room_name).clone()
+        names = room.get_players_names()
+        infos = {}
+        for name in names:
+            player = room.get_player(name=name)
+            infos.update({name: player.palitos})
+        return Response(bundle=Bundle(match=infos))
+
     def room_exist(self, room_name):
         exist = self.db.rooms.exist(room_name)
         return Response(bundle=Bundle(exist=exist))
@@ -61,6 +70,15 @@ class GameManager(object):
         self._notify_room_event(room_name, evt)
 
         return Response(bundle=Bundle(player=player))
+
+    def can_start_game(self, room_name):
+        room = self.db.rooms.get(room_name).clone()
+        return room.player_count() >= 2
+
+    def start_game(self, room_name):
+        print("Starting game")
+        evt = Event(EventTypes.NewGame, valid=True)
+        self._notify_room_event(room_name, evt)
 
     def observe_room(self, room_name, observer):
         if not observer:

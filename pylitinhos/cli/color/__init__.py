@@ -4,9 +4,9 @@ from .defs import *
 
 def text_custom(string_val, color=None, prefix=TEXT_PREFIX):
     if color is None or not COLORS_ENABLED:
-        return prefix + string_val
+        return prefix + str(string_val)
     else:
-        return prefix + color + string_val + Style.RESET_ALL
+        return prefix + color + str(string_val) + Style.RESET_ALL
 
 
 def text_default(string_val, prefix=TEXT_PREFIX):

@@ -3,6 +3,7 @@ class EventTypes(object):
     Shutdown    = 0
     AddedUser   = 1
     UserInput   = 2
+    NewGame     = 3
 
     StartRound          = 3
     ChangeChoiceTurn    = 4
@@ -14,7 +15,8 @@ class EventTypes(object):
 
     _str = {
         Shutdown : "Shutdown",
-        AddedUser : "AddedUser"
+        AddedUser : "AddedUser",
+        NewGame : "NewGame"
     }
 
     @staticmethod

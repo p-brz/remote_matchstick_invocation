@@ -2,6 +2,7 @@
 from pylitinhos.model.Event import *
 from queue import Queue
 
+
 class EventLoop(object):
     def __init__(self, *k, **kw):
         self.queue = Queue()
