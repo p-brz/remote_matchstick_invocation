@@ -7,11 +7,14 @@ class Error(object):
 
     class Causes:
         PlayerAlreadyOnRoom = 1
-        InvalidLogin        = 2
-        NewUser             = 3
-        CreationError       = 4
-        NoObserver          = 5
-        InexistentUser      = 6
+        InvalidLogin = 2
+        NewUser = 3
+        CreationError = 4
+        NoObserver = 5
+        InexistentUser = 6
+        InvalidBet = 7
+        FirstBetNull = 8
+        InvalidGuess = 9
 
         msgs = {
             PlayerAlreadyOnRoom: "Jogador já foi adicionado a esta sala"
@@ -34,7 +37,7 @@ class Bundle(object):
     def add_data(self, data, value):
         self.data.update({data: value})
 
-        return self;
+        return self
 
     def get_data(self, data):
         return self.data[data]

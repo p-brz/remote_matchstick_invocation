@@ -9,7 +9,9 @@ from getpass import getpass
 
 
 class WaitStartState(State):
+
     class GameStartObserver(object):
+
         def __init__(self, game_manager):
             self.done = False
             self.game_manager = game_manager
@@ -17,39 +19,53 @@ class WaitStartState(State):
         @Pyro4.callback
         @Pyro4.oneway
         def on_add_player(self, player_name, room_name):
-            #TODO: corrigir implementação
-
-            print("adicionou jogador: ", player_name, " na sala: ", room_name)
+            # TODO: corrigir implementação
+            print(text_success("Um novo jogador entrou na sala: "),
+                  player_name)
 
             res = self.game_manager.get_room(room_name)
 
-            print("got response :", res)
+            # print("got response :", res)
             if res.is_ok():
                 room = res.bundle.get_data('room')
-                print("room :", room)
+                print(text_info("Total de jogadores: "), end='')
+                print(room.player_count())
+
+                # print("room :", room.player_count())
                 self.done = room.player_count() > 1
+                print(self.done)
+            else:
+                print("Oh noes")
 
         def is_done(self):
             print("is done? ", self.done)
-
             return self.done
-
 
     def run(self, arguments={}):
         Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
         with Pyro4.core.Daemon() as daemon:
+            print()
+            room_name = self.player.room_name
+            res = self.player.proxy.get_room(room_name)
+            room = res.bundle.get_data('room')
+
+            print(text_primary("> Sala %s <" % room_name))
+            print(text_info("Total de jogadores: "), end='')
+            print(room.player_count())
+            print(text_info("Aguardando jogadores... "))
             # register our callback handler
             observer = self.GameStartObserver(self.player.proxy)
             daemon.register(observer)
 
-            res = self.player.proxy.observe_room(self.player.room_name, observer)
+            res = self.player.proxy.observe_room(self.player.room_name,
+                                                 observer)
 
             if not res.is_ok():
-                print("failed to observe room")
+                # print("failed to observe room")
                 return False
 
-            print("waiting for all work complete...")
+            # print("waiting for all work complete...")
             daemon.requestLoop(loopCondition=lambda: not observer.is_done())
-            print("done!")
+            # print("done!")
 
         return False

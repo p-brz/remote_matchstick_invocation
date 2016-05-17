@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
+
 class GameManager(object):
 
     def __init__(self, **kw):
@@ -50,7 +51,7 @@ class GameManager(object):
 
         player = None
         try:
-            #Cria sala e player (se ja não tiverem sido criados)
+            # Cria sala e player (se ja não tiverem sido criados)
             self.db.rooms.add_player(room_name, player_name)
         except NoResultFound:
             return Response(error=Error(Error.Causes.InexistentUser))

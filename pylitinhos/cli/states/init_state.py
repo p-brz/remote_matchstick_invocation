@@ -56,23 +56,27 @@ class InitState(State):
 
         print(text_primary("> Identificação < "))
         while not registered:
-            print()
             username = input(text_default("Username: "))
             password = getpass(text_default("Password: "))
 
             response = proxy.authenticate_user(username, password)
             if response.is_ok():
                 registered = True
+                print(text_success("Usuário autenticado com sucesso"))
+                print()
             else:
                 if response.cause == Error.Causes.PlayerAlreadyOnRoom:
                     print(text_danger(
                         "Nome de usuário inválido! Escolha outro."))
-                elif response.get_cause == Error.Causes.InvalidLogin:
+
+                elif response.cause == Error.Causes.InvalidLogin:
                     print(text_danger(
                         "Informações de login incorretas. Tente novamente."))
-                elif response.get_cause == Error.Causes.NewUser:
-                    d = input(text_info("Usuário %s ainda não foi utilizado."
-                                        "Deseja criar um novo usuário? (s/n)"))
+
+                elif response.cause == Error.Causes.NewUser:
+                    d = input(text_info("Usuário %s ainda não foi utilizado. "
+                                        "Deseja criar um novo usuário? "
+                                        "(s/n) " % username))
 
                     if d.lower() == 's':
                         registered = self.register_new_player(username,
@@ -80,6 +84,7 @@ class InitState(State):
                                                               proxy)
                 else:
                     print(text_danger("Error: "), response.error_msg())
+            print()
 
         return username
 
@@ -96,7 +101,7 @@ class InitState(State):
             print(text_default("Apelido: %s" % nickname))
             print(text_default("Username: %s" % username))
             print()
-            r = input(text_info("As informações estão corretas? (s/n)"))
+            r = input(text_info("As informações estão corretas? (s/n) "))
 
             if r.lower() == 's':
                 response = proxy.register_new_player(username, password,
