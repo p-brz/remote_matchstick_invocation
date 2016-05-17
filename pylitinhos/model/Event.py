@@ -13,6 +13,8 @@ class EventTypes(object):
     OnPlayerWin         = 9
     MatchFinished       = 10
 
+    StartGuessing       = 11
+
     _str = {
         Shutdown : "Shutdown",
         AddedUser : "AddedUser",
@@ -22,7 +24,7 @@ class EventTypes(object):
         OnPlayerGuess : "OnPlayerGuess",
         FinishRound : "FinishRound",
         OnPlayerWin : "OnPlayerWin",
-        MatchFinished : "MatchFinished" 
+        MatchFinished : "MatchFinished"
     }
 
     @staticmethod
