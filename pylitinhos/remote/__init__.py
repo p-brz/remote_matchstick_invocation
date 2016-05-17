@@ -44,6 +44,15 @@ class GameManager(object):
     def get_room(self, room_name):
         return Response(bundle=Bundle(room=self.db.rooms.get(room_name).clone()))
 
+    def get_match_info(self, room_name):
+        room = self.db.rooms.get(room_name).clone()
+        names = room.get_players_names()
+        infos = {}
+        for name in names:
+            player = room.get_player(name=name)
+            infos.update({name: player.palitos})
+        return Response(bundle=Bundle(match=infos))
+
     def room_exist(self, room_name):
         exist = self.db.rooms.exist(room_name)
         return Response(bundle=Bundle(exist=exist))

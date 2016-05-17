@@ -30,14 +30,13 @@ class GameState(State):
         return False
 
     def show_match_infos(self):
+        print(text_primary("Quantidade de palitos no jogo"))
         response = self.player.proxy.get_match_info(self.player.room_name)
         palitinhos_info = response.bundle.get_data('match')
-
-        for nick, palitinhos in palitinhos_info:
+        print(palitinhos_info)
+        for nick, palitinhos in palitinhos_info.items():
             print(text_info(nick + ": "), end='')
             print(text_default(palitinhos))
-
-        print()
 
     def betting_phase(self):
         print()
