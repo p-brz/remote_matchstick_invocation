@@ -17,6 +17,7 @@ class GameState(State):
 
         self.evLoop = kw.get('event_loop', None)
         self.observer_thread = kw.get('observer_thread', None)
+        self.keep_going = True
 
     def run(self, arguments={}):
         self.player.proxy.set_ready(
@@ -38,11 +39,6 @@ class GameState(State):
             #     match_over = self.is_match_over_for_me()
 
             self.event_loop()
-
-            if self.i_am_winner():
-                print(text_success("A conta não é sua hoje"))
-            else:
-                print(text_danger("Parece que hoje você paga a conta"))
         finally:
             if self.observer_thread is not None:
                 self.observer_thread.stop()
@@ -52,6 +48,8 @@ class GameState(State):
     def event_loop(self):
         for evt in self.evLoop.events():
             self.on_event(evt)
+            if not self.keep_going:
+                break
 
     def on_event(self, evt):
         callback = {
@@ -112,12 +110,19 @@ class GameState(State):
         pass
 
     def on_player_win(self, evt):
-        '''Algum jogador venceu o jogo - está sem palitos'''
-        pass
+        winner = evt.data.get('player_name')
+        if winner == self.player.name:
+            print(text_success("Você venceu! A conta não é sua!"))
+            self.keep_going = False
+        else:
+            print(text_success("Jogador %s está sem palitos e não "
+                               "pagará a conta" % winner))
 
     def on_match_finish(self, evt):
-        '''Fim da partida.'''
-        pass
+        loser = evt.data.get('player_name')
+        print(text_warning("Parece que o jogador %s terá que "
+                           "pagar a conta" % loser))
+        self.keep_going = False
 
     def show_match_infos(self):
         print(text_primary("Quantidade de palitos no jogo"))
