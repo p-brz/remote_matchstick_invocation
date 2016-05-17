@@ -9,6 +9,7 @@ from getpass import getpass
 
 from pylitinhos.model.Event import *
 
+
 class GameState(State):
 
     def __init__(self, player, **kw):
@@ -16,8 +17,11 @@ class GameState(State):
         super(GameState, self).__init__(player)
 
     def run(self, arguments={}):
+        self.player.proxy.set_ready(
+            self.player.room_name, self.player.name
+        )
         self.evLoop = arguments.get('event_loop', self.evLoop)
-
+        print()
         print(text_primary("> Início do jogo <"))
 
         # match_over = False
@@ -58,6 +62,7 @@ class GameState(State):
 
     def on_start_round(self, evt):
         '''Começa rodada'''
+        print(evt)
         pass
 
     def on_change_choice_turn(self, evt):

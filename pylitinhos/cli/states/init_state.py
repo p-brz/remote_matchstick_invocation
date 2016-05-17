@@ -19,11 +19,12 @@ class InitState(State):
         print(text_default("Conexão com o servidor... "), end="")
         try:
             self.player.proxy = self.create_rmi_proxy()
+            self.player.proxy.echo()
             print(text_success("OK", prefix=""))
         except Exception:
-            text_danger("ERRO")
-            text_danger("Verifique se o servidor está online "
-                        "e tente novamente")
+            print(text_danger("ERRO"))
+            print(text_danger("Verifique se o servidor está online "
+                              "e tente novamente"))
             exit()
 
         print()

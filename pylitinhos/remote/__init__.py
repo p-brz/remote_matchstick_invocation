@@ -17,7 +17,11 @@ class GameManager(object):
             self.db = Data()
 
         self.room_observers = {}
+        self.room_infos = {}
         self.executor = ThreadPoolExecutor(max_workers=2)
+
+    def echo(self):
+        return True
 
     def destroy(self):
         self.executor.shutdown()
@@ -52,6 +56,40 @@ class GameManager(object):
             player = room.get_player(name=name)
             infos.update({name: player.palitos})
         return Response(bundle=Bundle(match=infos))
+
+    def set_ready(self, room_name, player_name):
+        room = self.db.rooms.get(room_name).clone()
+        player = room.get_player(player_name)
+
+        player.ready = True
+        self.check_all_ready(room_name)
+
+    def check_all_ready(self, room):
+        room = self.db.rooms.get(room_name).clone()
+        names = room.get_players_names()
+        all_ready = True
+        for name in names:
+            player = room.get_player(name=name)
+            if not player.ready:
+                all_ready = False
+                break
+
+        if all_ready:
+            self.setup_game()
+
+
+    def setup_game(self, room_name):
+        self.room_infos.update({
+            room_name: {
+                'current_turn': 1,
+                'order': room.get_players_names()
+            }
+        })
+
+        evt = Event(EventTypes.StartRound,
+                    player_name=self.room_infos[room_name]['order'][0])
+        self._notify_room_event(room_name, evt)
+
 
     def room_exist(self, room_name):
         exist = self.db.rooms.exist(room_name)

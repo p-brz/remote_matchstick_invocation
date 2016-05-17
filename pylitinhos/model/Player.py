@@ -13,9 +13,11 @@ class Player(BaseModel):
     user_id = Column(sqlalchemy.Integer, ForeignKey(User.__tablename__ + ".id"))
     user    = relationship("User", backref=backref(__tablename__, uselist=False))
 
+
     room_id = Column(sqlalchemy.Integer, ForeignKey('rooms.id'))
 
     palitos = Column(sqlalchemy.Integer)
+    ready   = Column(sqlalchemy.Boolean, default=False)
 
     def __init__(self, **kw):
         kw['palitos'] = kw.get('palitos', 0)
