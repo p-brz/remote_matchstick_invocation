@@ -69,6 +69,7 @@ class GameState(State):
     def on_start_round(self, evt):
         '''Começa rodada'''
         print(text_primary("Rodada %d" % evt.data.get('round')))
+        self.show_match_infos()
 
         print(text_primary("Etapa 1 - Aposta"))
         print()
@@ -89,25 +90,54 @@ class GameState(State):
             print(current_player)
 
     def on_start_guessing(self, evt):
-        pass
+        print(text_primary("Etapa 2 - Palpite"))
+        print()
+        current_player = evt.data.get('player_name')
+        if current_player == self.player.name:
+            self.guessing_phase()
+        else:
+            print(text_info("Vez do jogador "), end='')
+            print(current_player)
 
     def on_change_guessing_turn(self, evt):
         '''Vez de alguém fazer uma aposta
             evento deve conter apostas ja feitas
         '''
-        #TODO: verificar se é a rodada deste jogador
-        pass
+        current_player = evt.data.get('player_name')
+        if current_player == self.player.name:
+            self.guessing_phase()
+        else:
+            print(text_info("Vez do jogador "), end='')
+            print(current_player)
 
     def on_player_guess(self, evt):
-        '''Algum jogador fez sua aposta'''
-        #NOTE: pode ser que seja o próprio jogador
-        pass
+        player = evt.data.get('player_name')
+        guess = evt.data.get('guess')
+
+        if player != self.player.name:
+            print(text_info("O jogador %s deu como "
+                            "palpite %d palito(s)" % (player, int(guess))))
 
     def on_finish_round(self, evt):
-        '''Finalizou a rodada, evento deve conter o resultado e quem acertou
-            -se alguem tiver acertado-
-        '''
-        pass
+        print(text_primary("Fim da rodada"))
+        print()
+        print(text_info("Resultados:"))
+        for player, bet in evt.data.get('bets').items():
+            print("O jogador %s apostou %d palito(s)" % (player, bet))
+
+        print()
+        print(text_info("Total: "), end="")
+        print(text_success(evt.data.get('total')))
+
+        print()
+        winner = evt.data.get('winner')
+        if winner is None:
+            print(text_warning("Não houveram vencedores nessa rodada"))
+        else:
+            if winner == self.player.name:
+                print(text_success("Você venceu esta rodada"))
+            else:
+                print(text_warning("O jogador %s venceu esta rodada" % winner))
 
     def on_player_win(self, evt):
         winner = evt.data.get('player_name')
@@ -128,7 +158,6 @@ class GameState(State):
         print(text_primary("Quantidade de palitos no jogo"))
         response = self.player.proxy.get_match_info(self.player.room_name)
         palitinhos_info = response.bundle.get_data('match')
-        print(palitinhos_info)
         for nick, palitinhos in palitinhos_info.items():
             print(text_info(nick + ": "), end='')
             print(text_default(palitinhos))
@@ -146,23 +175,16 @@ class GameState(State):
         )
 
     def guessing_phase(self):
-        print()
-        print(text_primary("2 - Palpite"))
-        while not self.is_guess_phase():
-            continue
-
-        if not self.player.my_turn:
-            print(text_info("Aguardando sua vez de jogar..."))
-        while not self.player.my_turn:
-            continue
-
-        print(text_success("Sua vez"))
+        print(text_success("É a sua vez"))
         guess_ok = False
         while not guess_ok:
             guess = input(text_primary("Informe um palpite: "))
             guess_ok = self.check_valid_guess(guess)
 
-        self.end_remote_turn()
+        self.player.proxy.end_guessing_turn(
+            self.player.room_name,
+            self.player.name
+        )
 
     def result_phase(self):
         print()

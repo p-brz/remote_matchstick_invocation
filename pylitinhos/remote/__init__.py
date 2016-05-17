@@ -170,7 +170,7 @@ class GameManager(object):
 
     def make_guess(self, room_name, player_name, guess):
         room = self.db.rooms.get(room_name).clone()
-
+        guess = int(guess)
         sum_palitos = 0
         for pname in room.players:
             sum_palitos += room.get_player(name=pname).palitos
@@ -190,6 +190,70 @@ class GameManager(object):
         self._notify_room_event(room_name, evt)
 
         return Response()
+
+    def end_guessing_turn(self, room_name, player_name):
+        index = 0
+        for name in self.room_infos[room_name]['order']:
+            if name == player_name:
+                break
+            else:
+                index = index + 1
+
+        if index == (len(self.room_infos[room_name]['order']) - 1):
+            self.launch_result(room_name)
+        else:
+            next_player = self.room_infos[room_name]['order'][index + 1]
+            evt = Event(EventTypes.ChangeGuessingTurn,
+                        player_name=next_player)
+            self._notify_room_event(room_name, evt)
+
+    def launch_result(self, room_name):
+        total_bet = 0
+        winner = None
+        for player, bet in self.room_infos[room_name]['bets'].items():
+            total_bet = total_bet + int(bet)
+
+        for player, guess in self.room_infos[room_name]['guesses'].items():
+            if guess == total_bet:
+                winner = player
+                break
+
+        evt = Event(EventTypes.FinishRound,
+                    bets=self.room_infos[room_name]['bets'],
+                    total=total_bet,
+                    winner=winner)
+
+        first = self.room_infos[room_name]['order'].pop(0)
+        self.room_infos[room_name]['order'].append(first)
+        self.room_infos[room_name]['current_round'] += 1
+
+        st_evt = Event(EventTypes.StartRound,
+                       player_name=self.room_infos[room_name]['order'][0],
+                       round=self.room_infos[room_name]['current_round'])
+
+        self._notify_room_event(room_name, evt)
+        if winner is not None:
+            room = self.db.rooms.get(room_name).clone()
+            player = room.get_player(name=winner)
+            player.palitos -= 1
+
+            self.db.players.save(player)
+
+            if player.palitos == 0:
+                index = 0
+                for name in self.room_infos[room_name]['order']:
+                    if name == winner:
+                        break
+                    else:
+                        index = index + 1
+
+                self.room_infos[room_name]['order'].pop(index)
+                win_evt = Event(EventTypes.OnPlayerWin,
+                                player_name=winner)
+                self._notify_room_event(room_name, win_evt)
+
+        self._notify_room_event(room_name, st_evt)
+
 
     def observe_room(self, room_name, observer):
         if not observer:
