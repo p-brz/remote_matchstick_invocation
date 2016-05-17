@@ -10,10 +10,10 @@ from getpass import getpass
 from pylitinhos.model.Event import *
 
 class GameState(State):
-    def GameState(self, player, **kw):
-        super(GameState, self).__init__(player)
 
+    def __init__(self, player, **kw):
         self.evLoop = kw.get('event_loop', None)
+        super(GameState, self).__init__(player)
 
     def run(self, arguments={}):
         self.evLoop = arguments.get('event_loop', self.evLoop)
