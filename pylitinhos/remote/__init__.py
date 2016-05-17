@@ -83,7 +83,7 @@ class GameManager(object):
         self.room_infos.update({
             room_name: {
                 'current_round': 1,
-                'order': room.get_players_names()
+                'order': room.get_players_names(),
                 'bets': {},
                 'guesses': {}
             }
@@ -127,13 +127,16 @@ class GameManager(object):
 
     def make_bet(self, room_name, player_name, bet):
         current_round = self.room_infos[room_name]['current_round']
+        bet = int(bet)
         if current_round == 1 and bet == 0:
+            print("First Null")
             return Response(error=Error(Error.Causes.FirstBetNull))
 
         room = self.db.rooms.get(room_name).clone()
-        player = room.get_player(player_name)
+        player = room.get_player(name=player_name)
 
         if bet > player.palitos or bet < 0:
+            print("Invalid")
             return Response(error=Error(Error.Causes.InvalidBet))
 
         self.room_infos[room_name]['bets'].update({
@@ -141,6 +144,24 @@ class GameManager(object):
         })
 
         return Response()
+
+    def end_betting_turn(self, room_name, player_name):
+        index = 0
+        for name in self.room_infos[room_name]['order']:
+            if name == player_name:
+                break
+            else:
+                index = index + 1
+
+        if index == (len(self.room_infos[room_name]['order']) - 1):
+            evt = Event(EventTypes.StartGuessing,
+                        player_name=self.room_infos[room_name]['order'][0])
+        else:
+            next_player = self.room_infos[room_name]['order'][index + 1]
+            evt = Event(EventTypes.ChangeChoiceTurn,
+                        player_name=next_player)
+
+        self._notify_room_event(room_name, evt)
 
     def observe_room(self, room_name, observer):
         if not observer:

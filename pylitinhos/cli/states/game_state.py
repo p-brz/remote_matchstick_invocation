@@ -61,7 +61,8 @@ class GameState(State):
             EventTypes.OnPlayerGuess       : self.on_player_guess,
             EventTypes.FinishRound         : self.on_finish_round,
             EventTypes.OnPlayerWin         : self.on_player_win,
-            EventTypes.MatchFinished       : self.on_match_finish
+            EventTypes.MatchFinished       : self.on_match_finish,
+            EventTypes.StartGuessing       : self.on_start_guessing
         }.get(evt.type, None)
 
         if callback:
@@ -82,8 +83,14 @@ class GameState(State):
 
     def on_change_choice_turn(self, evt):
         ''' Muda a rodada de quem deve escolher os palitos'''
+        current_player = evt.data.get('player_name')
+        if current_player == self.player.name:
+            self.betting_phase()
+        else:
+            print(text_info("Vez do jogador "), end='')
+            print(current_player)
 
-        #TODO: verificar se é a rodada deste jogador
+    def on_start_guessing(self, evt):
         pass
 
     def on_change_guessing_turn(self, evt):
@@ -151,7 +158,6 @@ class GameState(State):
             guess_ok = self.check_valid_guess(guess)
 
         self.end_remote_turn()
-        self.player.my_turn = False
 
     def result_phase(self):
         print()
@@ -188,7 +194,7 @@ class GameState(State):
                 print(text_danger("Aposta inválida. "
                                   "Tente novamente"))
             elif response.cause == Error.Causes.FirstBetNull:
-                print(text_danger("O primeira aposta não pode ser zero. "
+                print(text_danger("A primeira aposta não pode ser zero. "
                                   "Informe outro valor"))
 
             return False
