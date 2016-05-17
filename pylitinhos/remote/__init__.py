@@ -59,12 +59,13 @@ class GameManager(object):
 
     def set_ready(self, room_name, player_name):
         room = self.db.rooms.get(room_name).clone()
-        player = room.get_player(player_name)
+        player = room.get_player(name=player_name)
 
         player.ready = True
+        self.db.players.save(player)
         self.check_all_ready(room_name)
 
-    def check_all_ready(self, room):
+    def check_all_ready(self, room_name):
         room = self.db.rooms.get(room_name).clone()
         names = room.get_players_names()
         all_ready = True
@@ -75,10 +76,11 @@ class GameManager(object):
                 break
 
         if all_ready:
-            self.setup_game()
+            self.setup_game(room_name)
 
 
     def setup_game(self, room_name):
+        room = self.db.rooms.get(room_name).clone()
         self.room_infos.update({
             room_name: {
                 'current_turn': 1,

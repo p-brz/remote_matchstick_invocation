@@ -65,7 +65,7 @@ class GameState(State):
         }.get(evt.type, None)
 
         if callback:
-            self.callback(evt)
+            callback(evt)
 
     def on_start_round(self, evt):
         '''Começa rodada'''

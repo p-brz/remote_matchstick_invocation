@@ -18,7 +18,7 @@ class Room(BaseModel):
 
     def get_players_names(self):
         print(self.players.keys())
-        return self.players.keys()
+        return list(self.players.keys())
 
     def has_player(self, player_name):
         return player_name in self.players
