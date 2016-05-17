@@ -4,6 +4,14 @@ class EventTypes(object):
     AddedUser   = 1
     UserInput   = 2
 
+    StartRound          = 3
+    ChangeChoiceTurn    = 4
+    ChangeGuessingTurn  = 5
+    OnPlayerGuess       = 6
+    FinishRound         = 7
+    OnPlayerWin         = 8
+    MatchFinished       = 9
+
     _str = {
         Shutdown : "Shutdown",
         AddedUser : "AddedUser"

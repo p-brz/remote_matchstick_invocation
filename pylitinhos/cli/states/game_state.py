@@ -9,18 +9,26 @@ from getpass import getpass
 
 
 class GameState(State):
+    def GameState(self, player, **kw):
+        super(GameState, self).__init__(player)
+
+        self.evLoop = kw.get('event_loop', None)
 
     def run(self, arguments={}):
+        self.evLoop = arguments.get('event_loop', self.evLoop)
+
         print(text_primary("> Início do jogo <"))
 
-        match_over = False
-        while not match_over:
-            self.show_match_infos()
-            self.betting_phase()
-            self.guessing_phase()
-            self.result_phase()
+        # match_over = False
+        # while not match_over:
+        #     self.show_match_infos()
+        #     self.betting_phase()
+        #     self.guessing_phase()
+        #     self.result_phase()
+        #
+        #     match_over = self.is_match_over_for_me()
 
-            match_over = self.is_match_over_for_me()
+        self.event_loop()
 
         if self.i_am_winner():
             print(text_success("A conta não é sua hoje"))
@@ -28,6 +36,60 @@ class GameState(State):
             print(text_danger("Parece que hoje você paga a conta"))
 
         return False
+
+    def event_loop(self):
+        for evt in self.evLoop.events():
+            self.on_event(evt)
+
+    def on_event(self, evt):
+        callback = {
+            StartRound          : self.on_start_round,
+            ChangeChoiceTurn    : self.on_change_choice_turn,
+            ChangeGuessingTurn  : self.on_change_guessing_turn,
+            OnPlayerGuess       : self.on_player_guess,
+            FinishRound         : self.on_finish_round,
+            OnPlayerWin         : self.on_player_win,
+            MatchFinished       : self.on_match_finish
+        }.get(evt.type, None)
+
+        if callback:
+            self.callback(evt)
+
+    def on_start_round(self, evt):
+        '''Começa rodada'''
+        pass
+
+    def on_change_choice_turn(self, evt):
+        ''' Muda a rodada de quem deve escolher os palitos'''
+
+        #TODO: verificar se é a rodada deste jogador
+        pass
+
+    def on_change_guessing_turn(self, evt):
+        '''Vez de alguém fazer uma aposta
+            evento deve conter apostas ja feitas
+        '''
+        #TODO: verificar se é a rodada deste jogador
+        pass
+
+    def on_player_guess(self, evt):
+        '''Algum jogador fez sua aposta'''
+        #NOTE: pode ser que seja o próprio jogador
+        pass
+
+    def on_finish_round(self, evt):
+        '''Finalizou a rodada, evento deve conter o resultado e quem acertou
+            -se alguem tiver acertado-
+        '''
+        pass
+
+    def on_player_win(self, evt):
+        '''Algum jogador venceu o jogo - está sem palitos'''
+        pass
+
+    def on_match_finish(self, evt):
+        '''Fim da partida.'''
+        pass
 
     def show_match_infos(self):
         response = self.player.proxy.get_match_info(self.player.room_name)
