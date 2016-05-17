@@ -1,5 +1,9 @@
 from pylitinhos.cli import Client
 
+import Pyro4
+
+Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
+Pyro4.config.SERIALIZER = 'pickle'
 
 def main():
     client = Client()

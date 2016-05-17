@@ -1,6 +1,7 @@
 from .model import *
 from ..db.Data import Data
 from ..db.UserDAO import UserDAO
+from pylitinhos.model.Event import *
 
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -55,7 +56,8 @@ class GameManager(object):
         except NoResultFound:
             return Response(error=Error(Error.Causes.InexistentUser))
 
-        self._notify_added_player(player_name, room_name)
+        evt = Event(EventTypes.AddedUser, player_name=player_name, room_name=room_name)
+        self._notify_room_event(room_name, evt)
 
         return Response(bundle=Bundle(player=player))
 
@@ -70,15 +72,13 @@ class GameManager(object):
 
         return Response()
 
-    def _notify_added_player(self, player_name, room_name):
-        def notify_added_player_async(self, player_name, room_name, observers):
-            # print("notify_added_player_async", (player_name, room_name, observers))
-
+    def _notify_room_event(self, room_name, evt):
+        def notify_room_event_async(self, evt, observers):
             if observers:
                 for observer in observers:
-                    observer.on_add_player(player_name, room_name)
+                    observer.on_event(evt)
 
         observers = self.room_observers.get(room_name, None)
 
         if observers:
-            self.executor.submit(notify_added_player_async, self, player_name, room_name, observers)
+            self.executor.submit(notify_room_event_async, self, evt, observers)

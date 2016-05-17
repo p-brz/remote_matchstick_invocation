@@ -9,6 +9,8 @@ from pylitinhos.remote.model import *
 
 def main():
     Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
+    Pyro4.config.SERIALIZER = 'pickle'
+
     pyroDaemon = Pyro4.Daemon()
     gameManager = GameManager()
     uri = pyroDaemon.register(gameManager)
