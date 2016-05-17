@@ -13,32 +13,39 @@ from pylitinhos.model.Event import *
 class GameState(State):
 
     def __init__(self, player, **kw):
-        self.evLoop = kw.get('event_loop', None)
         super(GameState, self).__init__(player)
+
+        self.evLoop = kw.get('event_loop', None)
+        self.observer_thread = kw.get('observer_thread', None)
 
     def run(self, arguments={}):
         self.player.proxy.set_ready(
             self.player.room_name, self.player.name
         )
         self.evLoop = arguments.get('event_loop', self.evLoop)
-        print()
-        print(text_primary("> Início do jogo <"))
+        self.observer_thread = arguments.get('observer_thread', self.observer_thread)
 
-        # match_over = False
-        # while not match_over:
-        #     self.show_match_infos()
-        #     self.betting_phase()
-        #     self.guessing_phase()
-        #     self.result_phase()
-        #
-        #     match_over = self.is_match_over_for_me()
+        try:
+            print(text_primary("> Início do jogo <"))
 
-        self.event_loop()
+            # match_over = False
+            # while not match_over:
+            #     self.show_match_infos()
+            #     self.betting_phase()
+            #     self.guessing_phase()
+            #     self.result_phase()
+            #
+            #     match_over = self.is_match_over_for_me()
 
-        if self.i_am_winner():
-            print(text_success("A conta não é sua hoje"))
-        else:
-            print(text_danger("Parece que hoje você paga a conta"))
+            self.event_loop()
+
+            if self.i_am_winner():
+                print(text_success("A conta não é sua hoje"))
+            else:
+                print(text_danger("Parece que hoje você paga a conta"))
+        finally:
+            if self.observer_thread is not None:
+                self.observer_thread.stop()
 
         return False
 
