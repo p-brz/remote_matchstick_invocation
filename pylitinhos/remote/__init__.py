@@ -227,13 +227,10 @@ class GameManager(object):
         self.room_infos[room_name]['order'].append(first)
         self.room_infos[room_name]['current_round'] += 1
 
-        st_evt = Event(EventTypes.StartRound,
-                       player_name=self.room_infos[room_name]['order'][0],
-                       round=self.room_infos[room_name]['current_round'])
+        room = self.db.rooms.get(room_name).clone()
 
         self._notify_room_event(room_name, evt)
         if winner is not None:
-            room = self.db.rooms.get(room_name).clone()
             player = room.get_player(name=winner)
             player.palitos -= 1
 
@@ -252,7 +249,16 @@ class GameManager(object):
                                 player_name=winner)
                 self._notify_room_event(room_name, win_evt)
 
-        self._notify_room_event(room_name, st_evt)
+        players = self.room_infos[room_name]['order']
+        if len(players) == 1:
+            st_evt = Event(EventTypes.MatchFinished,
+                           player_name=self.room_infos[room_name]['order'][0])
+            self._notify_room_event(room_name, st_evt)
+        else:
+            st_evt = Event(EventTypes.StartRound,
+                           player_name=self.room_infos[room_name]['order'][0],
+                           round=self.room_infos[room_name]['current_round'])
+            self._notify_room_event(room_name, st_evt)
 
 
     def observe_room(self, room_name, observer):
