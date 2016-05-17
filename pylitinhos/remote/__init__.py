@@ -78,13 +78,14 @@ class GameManager(object):
         if all_ready:
             self.setup_game(room_name)
 
-
     def setup_game(self, room_name):
         room = self.db.rooms.get(room_name).clone()
         self.room_infos.update({
             room_name: {
                 'current_round': 1,
                 'order': room.get_players_names()
+                'bets': {},
+                'guesses': {}
             }
         })
 
@@ -123,6 +124,23 @@ class GameManager(object):
         print("Start game evt:", evt)
 
         self._notify_room_event(room_name, evt)
+
+    def make_bet(self, room_name, player_name, bet):
+        current_round = self.room_infos[room_name]['current_round']
+        if current_round == 1 and bet == 0:
+            return Response(error=Error(Error.Causes.FirstBetNull))
+
+        room = self.db.rooms.get(room_name).clone()
+        player = room.get_player(player_name)
+
+        if bet > player.palitos or bet < 0:
+            return Response(error=Error(Error.Causes.InvalidBet))
+
+        self.room_infos[room_name]['bets'].update({
+            player_name: bet
+        })
+
+        return Response()
 
     def observe_room(self, room_name, observer):
         if not observer:
